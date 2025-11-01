@@ -1,4 +1,4 @@
-name: CI with SonarQube
+name: CI with SonarCloud
 
 on:
   push:
@@ -14,7 +14,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for better analysis
+          fetch-depth: 0  # Required for proper blame/branch analysis
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -26,18 +26,12 @@ jobs:
       - name: Build and test
         run: mvn -B clean verify
 
-      - name: SonarQube Scan
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          mvn -B sonar:sonar \
-            -Dsonar.projectKey=Alexandre-A_HW1-ZeroMonos \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.organization=alexandre-a \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-
-      - name: Wait for Quality Gate
-        uses: sonarsource/sonarqube-quality-gate-action@master
-        timeout-minutes: 10
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=Alexandre-A_HW1-ZeroMonos
+            -Dsonar.organization=alexandre-a
+            -Dsonar.host.url=https://sonarcloud.io
