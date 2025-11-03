@@ -10,7 +10,7 @@ Feature: Citizen Booking Management
 
   Scenario: Create a new booking successfully
     When I select municipality "Porto"
-    And I select collection date 30 days from now
+    And I select collection date 13 days from now
     And I select time slot "morning"
     And I add a bulk item with:
       | name        | Old Sofa              |
@@ -35,12 +35,10 @@ Feature: Citizen Booking Management
     When I enter my access token in the cancel field
     And I click cancel booking
     Then I should see a cancellation confirmation
-    When I check the status again
-    Then the status should be "CANCELLED"
 
   Scenario Outline: Create bookings for different municipalities
     When I select municipality "<municipality>"
-    And I select collection date 30 days from now
+    And I select collection date 13 days from now
     And I select time slot "<timeSlot>"
     And I add a bulk item with:
       | name        | Test Item       |

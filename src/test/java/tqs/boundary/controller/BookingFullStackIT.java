@@ -28,15 +28,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Full-Stack Integration Tests for Booking System
- * 
- * Tests the ENTIRE application stack:
- * - Real HTTP requests (TestRestTemplate)
- * - Real controllers
- * - Real services
- * - Real repositories
- * - Real database (H2 in-memory)
- * 
- * Unlike @WebMvcTest, NO mocks are used!
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase

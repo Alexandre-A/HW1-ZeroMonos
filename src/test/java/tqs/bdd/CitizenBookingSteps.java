@@ -87,60 +87,70 @@ public class CitizenBookingSteps {
         // Wait a moment for async operation
         getPage().waitForTimeout(2000);
         
-        // Check if the token card became visible (hidden class removed)
+        // FIRST: Check if there's an error on the page (fail fast)
+        Locator errorAlert = getPage().locator(".alert-danger.show, .alert-error.show");
+        if (errorAlert.count() > 0 && errorAlert.first().isVisible()) {
+            String errorText = errorAlert.first().textContent().trim();
+            fail("Booking creation failed with error: " + errorText);
+        }
+        
+        // SECOND: Check if token card is visible (success case)
         Locator tokenCard = getPage().locator("#tokenCard:not(.hidden)");
         
+        // Wait for token card to appear (if booking succeeded)
+        boolean tokenCardVisible = false;
         try {
             tokenCard.waitFor(new Locator.WaitForOptions()
                 .setState(WaitForSelectorState.VISIBLE)
                 .setTimeout(5000));
+            tokenCardVisible = true;
         } catch (Exception e) {
-            // If token card didn't show, check page content for debugging
+            // Token card didn't appear - check page content one more time
             String pageContent = getPage().content();
-            System.out.println("DEBUG: Token card not visible, checking for errors...");
-            
-            // Extract error message if present (check both alert-danger and alert-error)
             if (pageContent.contains("alert-danger") || pageContent.contains("alert-error")) {
-                // Try to find the error message
-                String searchClass = pageContent.contains("alert-danger") ? "alert-danger" : "alert-error";
-                int errorStart = pageContent.indexOf(searchClass);
-                String errorSection = pageContent.substring(errorStart, Math.min(errorStart + 500, pageContent.length()));
-                System.out.println("DEBUG: Error section: " + errorSection);
-                fail("Booking creation appears to have failed - error alert on page. Check console output for details.");
+                fail("Booking creation failed - error alert found on page");
             }
-            throw e; // Re-throw if no error found
+            // If no error found, re-throw the timeout
+            throw e;
         }
         
-        // Verify success message or token is displayed
-        String pageContent = getPage().content();
-        assertTrue(pageContent.contains("Booking created successfully") || 
-                  pageContent.contains("access token") ||
-                  getPage().locator("#accessTokenDisplay").isVisible(),
-                  "Page should show success message or token");
+        // Verify success indicators are present
+        if (tokenCardVisible) {
+            String pageContent = getPage().content();
+            assertTrue(pageContent.contains("Booking created successfully") || 
+                      pageContent.contains("access token") ||
+                      getPage().locator("#accessTokenDisplay").isVisible(),
+                      "Token card is visible but no success message found");
+        }
     }
 
     @Then("I should receive an access token")
     public void iShouldReceiveAnAccessToken() {
         // Wait a moment for the async operation to complete
-        getPage().waitForTimeout(3000);
+        getPage().waitForTimeout(2000);
         
-        // Check if token card became visible OR if token is in the response div
+        // FIRST: Check for errors (fail fast)
+        Locator errorAlert = getPage().locator(".alert-danger.show, .alert-error.show");
+        if (errorAlert.count() > 0 && errorAlert.first().isVisible()) {
+            String errorText = errorAlert.first().textContent().trim();
+            fail("Cannot retrieve access token - booking creation failed with error: " + errorText);
+        }
+        
+        // SECOND: Wait for token card to be visible
         Locator tokenCard = getPage().locator("#tokenCard:not(.hidden)");
         Locator tokenDisplay = getPage().locator("#accessTokenDisplay");
         
         try {
-            // Try waiting for token card to be visible
             tokenCard.waitFor(new Locator.WaitForOptions()
                 .setState(WaitForSelectorState.VISIBLE)
                 .setTimeout(5000));
         } catch (Exception e) {
-            // If card didn't show, check if there's an error or print page content for debugging
-            System.out.println("DEBUG: Token card did not become visible");
+            // Check one more time for errors that might have appeared
             String pageContent = getPage().content();
-            if (pageContent.contains("alert-danger") || pageContent.contains("error")) {
-                System.out.println("DEBUG: Error found on page");
-                fail("Booking creation failed - error message on page");
+            if (pageContent.contains("alert-danger") || pageContent.contains("alert-error")) {
+                fail("Booking creation failed - error found on page after timeout");
             }
+            throw new AssertionError("Token card did not become visible within timeout, and no error message found");
         }
         
         // Get the token text
@@ -161,9 +171,9 @@ public class CitizenBookingSteps {
     @Given("I have created a booking with token saved")
     public void iHaveCreatedABookingWithTokenSaved() {
         iAmOnTheCitizenPortal();
-        iSelectMunicipality("Porto");
-        iSelectCollectionDateDaysFromNow(5);
-        iSelectTimeSlot("morning");
+        iSelectMunicipality("Lisboa");
+        iSelectCollectionDateDaysFromNow(32);
+        iSelectTimeSlot("afternoon");
         
         getPage().locator("#itemName-1").fill("Test Item");
         getPage().locator("#itemDesc-1").fill("Test description");

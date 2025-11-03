@@ -3,7 +3,10 @@ package tqs.bdd;
 import io.cucumber.java.en.*;
 import io.cucumber.datatable.DataTable;
 import com.microsoft.playwright.*;
+import com.microsoft.playwright.options.RequestOptions;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -106,17 +109,55 @@ public class StaffOperationsSteps {
 
     @Given("there is a booking with status {string}")
     public void thereIsABookingWithStatus(String status) {
-        // This would ideally create or find a booking with this status
-        // For now, assume it exists from test data
+        // Create a booking via API instead of UI to avoid dynamic form issues
+        String jsonBody = """
+                {
+                    "municipality": "Coimbra",
+                    "collectionDate": "%s",
+                    "timeSlot": "afternoon",
+                    "items": [
+                        {
+                            "name": "Staff Test Item",
+                            "description": "Created for staff test",
+                            "weight": 10.0,
+                            "volume": 3.0
+                        }
+                    ]
+                }
+                """;
+        
+        // Use 45 days to avoid conflicts with other tests
+        LocalDate futureDate = LocalDate.now().plusDays(45);
+        String dateString = futureDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
+        jsonBody = String.format(jsonBody, dateString);
+        
+        // Make API call using Playwright's APIRequestContext
+        APIResponse response = getPage().request().post(BASE_URL + "/api/bookings", 
+            RequestOptions.create()
+                .setHeader("Content-Type", "application/json")
+                .setData(jsonBody));
+        
+        if (!response.ok()) {
+            throw new RuntimeException("Failed to create booking via API: " + response.statusText() + 
+                "\nResponse: " + response.text());
+        }
+        
+        // Booking created successfully with status RECEIVED
+        // Now navigate to staff portal and wait for bookings to load
+        iAmOnTheStaffPortal();
+        
+        // Wait for bookings table to populate
+        getPage().waitForSelector("tbody#bookingsTableBody tr:not(:has-text('Loading'))", 
+            new Page.WaitForSelectorOptions().setTimeout(5000));
+        getPage().waitForTimeout(500); // Extra time for table to stabilize
     }
 
     @When("I click view details for that booking")
     public void iClickViewDetailsForThatBooking() {
         Locator viewBtn = getPage().locator("button:has-text('View'), .view-details-btn, button:has-text('Details')").first();
-        if (viewBtn.count() > 0) {
-            viewBtn.click();
-            getPage().waitForTimeout(1500);
-        }
+        viewBtn.waitFor(new Locator.WaitForOptions().setTimeout(3000));
+        viewBtn.click();
+        getPage().waitForTimeout(1500);
     }
 
     @Then("I should see the complete booking information")
@@ -148,9 +189,27 @@ public class StaffOperationsSteps {
 
     @When("I click the assign button")
     public void iClickTheAssignButton() {
-        Locator assignBtn = getPage().locator("#assignBtn, button:has-text('Assign')");
-        assignBtn.waitFor(new Locator.WaitForOptions().setTimeout(3000));
+        // Make sure we're viewing booking details first (modal must be open)
+        Locator modal = getPage().locator("#detailsModal.show");
+        if (modal.count() == 0 || !modal.isVisible()) {
+            // If modal not open, open the first booking
+            iClickViewDetailsForThatBooking();
+        }
+        
+        // Wait for modal footer to be populated with action buttons
+        getPage().waitForTimeout(1000);
+        
+        // The Assign button is dynamically created and contains emoji + text "Assign"
+        // It's a button with onclick="updateBookingStatus('ASSIGNED')"
+        Locator assignBtn = getPage().locator("button:has-text('Assign')");
+        assignBtn.waitFor(new Locator.WaitForOptions().setTimeout(5000));
         assignBtn.click();
+        
+        // Handle confirmation dialog
+        getPage().onDialog(dialog -> {
+            dialog.accept();
+        });
+        
         getPage().waitForTimeout(2000);
     }
 
@@ -177,17 +236,31 @@ public class StaffOperationsSteps {
 
     @When("I start the booking")
     public void iStartTheBooking() {
-        Locator startBtn = getPage().locator("#startBtn, button:has-text('Start'), button:has-text('In Progress')");
-        startBtn.waitFor(new Locator.WaitForOptions().setTimeout(3000));
+        // The "Start Collection" button has text "Start Collection"
+        Locator startBtn = getPage().locator("button:has-text('Start Collection'), button:has-text('Start')");
+        startBtn.waitFor(new Locator.WaitForOptions().setTimeout(5000));
         startBtn.click();
+        
+        // Handle confirmation dialog
+        getPage().onDialog(dialog -> {
+            dialog.accept();
+        });
+        
         getPage().waitForTimeout(2000);
     }
 
     @When("I complete the booking")
     public void iCompleteTheBooking() {
-        Locator completeBtn = getPage().locator("#completeBtn, button:has-text('Complete')");
-        completeBtn.waitFor(new Locator.WaitForOptions().setTimeout(3000));
+        // The "Mark Complete" button has text "Mark Complete"
+        Locator completeBtn = getPage().locator("button:has-text('Mark Complete'), button:has-text('Complete')");
+        completeBtn.waitFor(new Locator.WaitForOptions().setTimeout(5000));
         completeBtn.click();
+        
+        // Handle confirmation dialog
+        getPage().onDialog(dialog -> {
+            dialog.accept();
+        });
+        
         getPage().waitForTimeout(2000);
     }
 
@@ -213,19 +286,17 @@ public class StaffOperationsSteps {
 
     @When("I cancel the booking")
     public void iCancelTheBooking() {
-        Locator cancelBtn = getPage().locator("#cancelBtn, button:has-text('Cancel')");
-        cancelBtn.waitFor(new Locator.WaitForOptions().setTimeout(3000));
-        
-        // Might need to confirm cancellation
+        // The Cancel button contains text "Cancel"
+        Locator cancelBtn = getPage().locator("button:has-text('Cancel'):not(:has-text('Cancellation'))");
+        cancelBtn.waitFor(new Locator.WaitForOptions().setTimeout(5000));
         cancelBtn.click();
-        getPage().waitForTimeout(2000);
         
-        // Check for confirmation dialog
-        Locator confirmBtn = getPage().locator("button:has-text('Confirm'), button:has-text('Yes')");
-        if (confirmBtn.count() > 0 && confirmBtn.isVisible()) {
-            confirmBtn.click();
-            getPage().waitForTimeout(1000);
-        }
+        // Handle confirmation dialog - JavaScript confirm() will appear
+        getPage().onDialog(dialog -> {
+            dialog.accept();
+        });
+        
+        getPage().waitForTimeout(2000);
     }
 
     @When("I view the booking details")

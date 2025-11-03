@@ -12,6 +12,6 @@ import static io.cucumber.junit.platform.engine.Constants.PLUGIN_PROPERTY_NAME;
 @IncludeEngines("cucumber")
 @SelectClasspathResource("features")
 @ConfigurationParameter(key = PLUGIN_PROPERTY_NAME, value = "pretty")
-@ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "tqs.functional")
+@ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "tqs.bdd")
 public class RunCucumberTest {
 }
