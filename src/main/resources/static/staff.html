@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZeroMonos - Staff Portal</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">🗑️ ZeroMonos</div>
+            <ul class="nav-links">
+                <li><a href="/index.html">Citizen Portal</a></li>
+                <li><a href="/staff.html" class="active">Staff Portal</a></li>
+                <li><a href="/dashboard.html">Dashboard</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="hero">
+            <h1>Staff Management Portal</h1>
+            <p>Manage and track all bulk waste collection requests</p>
+        </div>
+
+        <!-- Alert Messages -->
+        <div id="alertContainer"></div>
+
+        <!-- Filters Section -->
+        <div class="card">
+            <h2>🔎 Filter Bookings</h2>
+            <div class="filters">
+                <div class="form-group">
+                    <label for="municipalityFilter">Municipality</label>
+                    <select id="municipalityFilter" onchange="loadBookings()">
+                        <option value="">All Municipalities</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="statusFilter">Status</label>
+                    <select id="statusFilter" onchange="loadBookings()">
+                        <option value="">All Statuses</option>
+                        <option value="RECEIVED">Received</option>
+                        <option value="ASSIGNED">Assigned</option>
+                        <option value="IN_PROGRESS">In Progress</option>
+                        <option value="COMPLETED">Completed</option>
+                        <option value="CANCELLED">Cancelled</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary" onclick="loadBookings()" style="margin-top: 1.8rem;">
+                        🔄 Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bookings Table -->
+        <div class="card">
+            <h2>📋 All Bookings (<span id="bookingCount">0</span>)</h2>
+            <div class="table-container">
+                <table id="bookingsTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Municipality</th>
+                            <th>Collection Date</th>
+                            <th>Time Slot</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookingsTableBody">
+                        <tr>
+                            <td colspan="7" class="text-center">
+                                <div class="loading"></div> Loading bookings...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Booking Details Modal -->
+        <div id="detailsModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Booking Details</h3>
+                    <button class="modal-close" onclick="closeDetailsModal()">&times;</button>
+                </div>
+                <div class="modal-body" id="bookingDetailsContent">
+                    <!-- Details will be loaded here -->
+                </div>
+                <div class="modal-footer" id="modalFooter">
+                    <button class="btn btn-secondary" onclick="closeDetailsModal()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="/js/staff.js"></script>
+</body>
+</html>

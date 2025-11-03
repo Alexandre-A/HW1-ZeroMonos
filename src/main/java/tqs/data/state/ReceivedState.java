@@ -7,28 +7,16 @@ import tqs.data.Booking.Booking;
  * State representing a newly received booking
  * Valid transitions: ASSIGNED, CANCELLED
  */
-public class ReceivedState implements BookingState {
-
-    private final Booking booking;
+public class ReceivedState extends AbstractBookingState {
 
     public ReceivedState(Booking booking) {
-        this.booking = booking;
+        super(booking);
     }
 
     @Override
     public void assign() {
         // Valid transition: RECEIVED -> ASSIGNED
         booking.setCurrentStatus(BookingStatus.ASSIGNED);
-    }
-
-    @Override
-    public void start() {
-        throw new InvalidStateTransitionException(getStateName(), "start");
-    }
-
-    @Override
-    public void complete() {
-        throw new InvalidStateTransitionException(getStateName(), "complete");
     }
 
     @Override

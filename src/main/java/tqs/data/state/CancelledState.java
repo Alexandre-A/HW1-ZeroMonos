@@ -4,26 +4,10 @@ package tqs.data.state;
  * State representing a cancelled booking
  * No transitions allowed (terminal state)
  */
-public class CancelledState implements BookingState {
+public class CancelledState extends AbstractBookingState {
 
-    @Override
-    public void assign() {
-        throw new InvalidStateTransitionException(getStateName(), "assign");
-    }
-
-    @Override
-    public void start() {
-        throw new InvalidStateTransitionException(getStateName(), "start");
-    }
-
-    @Override
-    public void complete() {
-        throw new InvalidStateTransitionException(getStateName(), "complete");
-    }
-
-    @Override
-    public void cancel() {
-        throw new InvalidStateTransitionException(getStateName(), "cancel");
+    public CancelledState() {
+        super(null); // Terminal state doesn't need booking reference
     }
 
     @Override

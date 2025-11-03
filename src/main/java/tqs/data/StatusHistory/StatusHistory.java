@@ -41,6 +41,7 @@ public class StatusHistory {
     public StatusHistory(BookingStatus status, Booking booking) {
         this.status = status;
         this.booking = booking;
+        this.datetime = LocalDateTime.now();
     }
 
     // Getters and Setters

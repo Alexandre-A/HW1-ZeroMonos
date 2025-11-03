@@ -7,28 +7,16 @@ import tqs.data.Booking.Booking;
  * State representing a booking assigned to a worker
  * Valid transitions: IN_PROGRESS, CANCELLED
  */
-public class AssignedState implements BookingState {
-
-    private final Booking booking;
+public class AssignedState extends AbstractBookingState {
 
     public AssignedState(Booking booking) {
-        this.booking = booking;
-    }
-
-    @Override
-    public void assign() {
-        throw new InvalidStateTransitionException(getStateName(), "assign");
+        super(booking);
     }
 
     @Override
     public void start() {
         // Valid transition: ASSIGNED -> IN_PROGRESS
         booking.setCurrentStatus(BookingStatus.IN_PROGRESS);
-    }
-
-    @Override
-    public void complete() {
-        throw new InvalidStateTransitionException(getStateName(), "complete");
     }
 
     @Override

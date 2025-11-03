@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Operations Dashboard - ZeroMonos</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <nav>
+      <div class="logo">🗑️ ZeroMonos</div>
+      <ul class="nav-links">
+        <li><a href="/index.html">Citizen Portal</a></li>
+        <li><a href="/staff.html">Staff Portal</a></li>
+        <li><a href="/dashboard.html" class="active">Dashboard</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <h2>Operations Dashboard</h2>
+      <p>Total Bookings: <span id="totalBookings">0</span></p>
+      <button id="refreshBtn">Refresh</button>
+      <span id="lastUpdated" style="margin-left:1rem;color:#666"></span>
+    </section>
+
+    <section style="display:flex;gap:2rem;flex-wrap:wrap;margin-top:1rem;">
+      <div style="flex:1 1 320px;max-width:480px;">
+        <h3>Bookings by status</h3>
+        <canvas id="statusChart"></canvas>
+        <table id="statusBreakdown" border="1" cellpadding="4" style="margin-top:1rem;width:100%;">
+          <thead>
+            <tr><th>Status</th><th>Count</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div style="flex:2 1 480px;max-width:800px;">
+        <h3>Bookings by municipality</h3>
+        <canvas id="municipalityChart"></canvas>
+      </div>
+    </section>
+
+    <section style="margin-top:2rem;">
+      <h3>Top municipalities</h3>
+      <table id="topMunicipalities" border="1" cellpadding="6">
+        <thead>
+          <tr><th>Municipality</th><th>Count</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      
+      <!-- Hidden table for test compatibility -->
+      <table id="municipalityBreakdown" style="display:none;" border="1" cellpadding="4">
+        <thead>
+          <tr><th>Municipality</th><th>Count</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>

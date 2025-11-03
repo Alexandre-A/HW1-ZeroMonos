@@ -7,22 +7,10 @@ import tqs.data.Booking.Booking;
  * State representing a booking that is currently being collected
  * Valid transitions: COMPLETED, CANCELLED
  */
-public class InProgressState implements BookingState {
-
-    private final Booking booking;
+public class InProgressState extends AbstractBookingState {
 
     public InProgressState(Booking booking) {
-        this.booking = booking;
-    }
-
-    @Override
-    public void assign() {
-        throw new InvalidStateTransitionException(getStateName(), "assign");
-    }
-
-    @Override
-    public void start() {
-        throw new InvalidStateTransitionException(getStateName(), "start");
+        super(booking);
     }
 
     @Override

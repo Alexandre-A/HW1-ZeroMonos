@@ -97,9 +97,9 @@ class StatusHistoryTest {
         testBooking.addStatusHistory(step3);
         testBooking.addStatusHistory(step4);
 
-        assertThat(testBooking.getStatusHistories()).hasSize(4);
+        assertThat(testBooking.getStatusHistories()).hasSize(5); // Initial RECEIVED + 4 added
         assertThat(testBooking.getStatusHistories().get(0).getStatus()).isEqualTo(BookingStatus.RECEIVED);
-        assertThat(testBooking.getStatusHistories().get(3).getStatus()).isEqualTo(BookingStatus.COMPLETED);
+        assertThat(testBooking.getStatusHistories().get(4).getStatus()).isEqualTo(BookingStatus.COMPLETED);
     }
 
     @Test
@@ -111,8 +111,8 @@ class StatusHistoryTest {
         booking.addStatusHistory(received);
         booking.addStatusHistory(cancelled);
 
-        assertThat(booking.getStatusHistories()).hasSize(2);
-        assertThat(booking.getStatusHistories().get(1).getStatus()).isEqualTo(BookingStatus.CANCELLED);
+        assertThat(booking.getStatusHistories()).hasSize(3); // Initial RECEIVED + 2 added
+        assertThat(booking.getStatusHistories().get(2).getStatus()).isEqualTo(BookingStatus.CANCELLED);
     }
 
     @Test

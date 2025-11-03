@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZeroMonos - Bulk Waste Collection</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">🗑️ ZeroMonos</div>
+            <ul class="nav-links">
+                <li><a href="/index.html" class="active">Citizen Portal</a></li>
+                <li><a href="/staff.html">Staff Portal</a></li>
+                <li><a href="/dashboard.html">Dashboard</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="hero">
+            <h1>Bulk Waste Collection Service</h1>
+            <p>Schedule convenient pickup for your large items - mattresses, appliances, furniture, and more!</p>
+        </div>
+
+        <!-- Alert Messages -->
+        <div id="alertContainer"></div>
+
+        <!-- Create Booking Section -->
+        <div class="card" id="createBookingCard">
+            <h2>📦 Schedule a Pickup</h2>
+            <form id="bookingForm">
+                <!-- Municipality -->
+                <div class="form-group">
+                    <label for="municipality">Municipality *</label>
+                    <select id="municipality" name="municipality" required>
+                        <option value="">Loading municipalities...</option>
+                    </select>
+                    <small>Select your location for service</small>
+                </div>
+
+                <!-- Collection Date -->
+                <div class="form-group">
+                    <label for="collectionDate">Collection Date *</label>
+                    <input type="date" id="collectionDate" name="collectionDate" required>
+                    <small>Choose a date at least 2 days from today</small>
+                </div>
+
+                <!-- Time Slot -->
+                <div class="form-group">
+                    <label for="timeSlot">Time Slot *</label>
+                    <select id="timeSlot" name="timeSlot" required>
+                        <option value="">Select a time slot</option>
+                        <option value="morning">Morning (8:00 AM - 12:00 PM)</option>
+                        <option value="afternoon">Afternoon (12:00 PM - 5:00 PM)</option>
+                        <option value="evening">Evening (5:00 PM - 8:00 PM)</option>
+                    </select>
+                    <small>Choose your preferred pickup window</small>
+                </div>
+
+                <!-- Bulk Items -->
+                <div class="form-group">
+                    <label>Bulk Items to Collect *</label>
+                    <div class="bulk-items-section" id="bulkItemsContainer">
+                        <!-- Items will be added here dynamically -->
+                    </div>
+                    <button type="button" class="btn btn-secondary btn-add-item" onclick="addBulkItem()">
+                        ➕ Add Another Item
+                    </button>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    Schedule Pickup
+                </button>
+            </form>
+            
+            <!-- Booking Response Message (Hidden by default) -->
+            <div id="bookingResponse" class="hidden" style="margin-top: 20px;"></div>
+        </div>
+
+        <!-- Success Token Display (Hidden by default) -->
+        <div class="card hidden" id="tokenCard">
+            <h2>✅ Booking Confirmed!</h2>
+            <div class="token-display">
+                <p>Your booking has been created successfully. Save this access token to check your booking status:</p>
+                <div class="token-code" id="accessToken">
+                    <span id="accessTokenDisplay"></span>
+                </div>
+                <p><small>⚠️ Save this token! You'll need it to check status or cancel your booking.</small></p>
+                <button class="btn btn-primary" onclick="copyToken()">📋 Copy Token</button>
+                <button class="btn btn-secondary" onclick="resetForm()">Schedule Another Pickup</button>
+            </div>
+        </div>
+
+        <!-- Check Booking Status Section -->
+        <div class="card">
+            <h2>🔍 Check Booking Status</h2>
+            <form id="checkStatusForm">
+                <div class="form-group">
+                    <label for="checkToken">Access Token</label>
+                    <input type="text" id="checkToken" name="checkToken" 
+                           placeholder="Enter your booking token" required>
+                    <small>Enter the token you received when creating your booking</small>
+                </div>
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary" id="checkStatusBtn">Check Status</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Booking Details Modal -->
+        <div id="detailsModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Booking Details</h3>
+                    <button class="modal-close" onclick="closeDetailsModal()">&times;</button>
+                </div>
+                <div class="modal-body" id="bookingDetailsContent">
+                    <!-- Details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" id="cancelBookingBtn" onclick="cancelBooking()">
+                        Cancel Booking
+                    </button>
+                    <button class="btn btn-secondary" onclick="closeDetailsModal()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="/js/citizen.js"></script>
+</body>
+</html>

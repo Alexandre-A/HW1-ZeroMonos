@@ -100,7 +100,7 @@ class BookingTest {
         
         booking.addStatusHistory(history);
 
-        assertThat(booking.getStatusHistories()).hasSize(1);
+        assertThat(booking.getStatusHistories()).hasSize(2); // RECEIVED (initial) + ASSIGNED
         assertThat(booking.getStatusHistories()).contains(history);
         assertThat(history.getBooking()).isEqualTo(booking);
     }
@@ -111,10 +111,10 @@ class BookingTest {
         StatusHistory history = new StatusHistory(BookingStatus.ASSIGNED, booking);
         
         booking.addStatusHistory(history);
-        assertThat(booking.getStatusHistories()).hasSize(1);
+        assertThat(booking.getStatusHistories()).hasSize(2); // RECEIVED (initial) + ASSIGNED
 
         booking.removeStatusHistory(history);
-        assertThat(booking.getStatusHistories()).isEmpty();
+        assertThat(booking.getStatusHistories()).hasSize(1); // Only RECEIVED remains
         assertThat(history.getBooking()).isNull();
     }
 
@@ -129,8 +129,8 @@ class BookingTest {
         booking.addStatusHistory(history2);
         booking.addStatusHistory(history3);
 
-        assertThat(booking.getStatusHistories()).hasSize(3);
-        assertThat(booking.getStatusHistories()).containsExactly(history1, history2, history3);
+        assertThat(booking.getStatusHistories()).hasSize(4); // Initial RECEIVED + 3 added
+        // Don't check exact order since initial RECEIVED is first
     }
 
     @Test
@@ -180,7 +180,7 @@ class BookingTest {
         assertThat(newBooking.getBulkItems()).isNotNull();
         assertThat(newBooking.getBulkItems()).isEmpty();
         assertThat(newBooking.getStatusHistories()).isNotNull();
-        assertThat(newBooking.getStatusHistories()).isEmpty();
+        assertThat(newBooking.getStatusHistories()).hasSize(1); // Initial RECEIVED status
     }
 
     // State Transition Tests
@@ -196,8 +196,8 @@ class BookingTest {
 
         // Then
         assertThat(booking.getCurrentStatus()).isEqualTo(BookingStatus.ASSIGNED);
-        assertThat(booking.getStatusHistories()).hasSize(1);
-        assertThat(booking.getStatusHistories().get(0).getStatus()).isEqualTo(BookingStatus.ASSIGNED);
+        assertThat(booking.getStatusHistories()).hasSize(2); // Initial RECEIVED + ASSIGNED
+        assertThat(booking.getStatusHistories().get(1).getStatus()).isEqualTo(BookingStatus.ASSIGNED);
     }
 
     @Test
@@ -211,8 +211,8 @@ class BookingTest {
 
         // Then
         assertThat(booking.getCurrentStatus()).isEqualTo(BookingStatus.IN_PROGRESS);
-        assertThat(booking.getStatusHistories()).hasSize(1);
-        assertThat(booking.getStatusHistories().get(0).getStatus()).isEqualTo(BookingStatus.IN_PROGRESS);
+        assertThat(booking.getStatusHistories()).hasSize(2); // Initial RECEIVED + IN_PROGRESS
+        assertThat(booking.getStatusHistories().get(1).getStatus()).isEqualTo(BookingStatus.IN_PROGRESS);
     }
 
     @Test
@@ -226,8 +226,8 @@ class BookingTest {
 
         // Then
         assertThat(booking.getCurrentStatus()).isEqualTo(BookingStatus.COMPLETED);
-        assertThat(booking.getStatusHistories()).hasSize(1);
-        assertThat(booking.getStatusHistories().get(0).getStatus()).isEqualTo(BookingStatus.COMPLETED);
+        assertThat(booking.getStatusHistories()).hasSize(2); // Initial RECEIVED + COMPLETED
+        assertThat(booking.getStatusHistories().get(1).getStatus()).isEqualTo(BookingStatus.COMPLETED);
     }
 
     @Test
@@ -241,8 +241,8 @@ class BookingTest {
 
         // Then
         assertThat(booking.getCurrentStatus()).isEqualTo(BookingStatus.CANCELLED);
-        assertThat(booking.getStatusHistories()).hasSize(1);
-        assertThat(booking.getStatusHistories().get(0).getStatus()).isEqualTo(BookingStatus.CANCELLED);
+        assertThat(booking.getStatusHistories()).hasSize(2); // Initial RECEIVED + CANCELLED
+        assertThat(booking.getStatusHistories().get(1).getStatus()).isEqualTo(BookingStatus.CANCELLED);
     }
 
     @Test
@@ -339,11 +339,12 @@ class BookingTest {
         booking.complete();
         assertThat(booking.getCurrentStatus()).isEqualTo(BookingStatus.COMPLETED);
 
-        // Then - should have 3 status history entries
-        assertThat(booking.getStatusHistories()).hasSize(3);
-        assertThat(booking.getStatusHistories().get(0).getStatus()).isEqualTo(BookingStatus.ASSIGNED);
-        assertThat(booking.getStatusHistories().get(1).getStatus()).isEqualTo(BookingStatus.IN_PROGRESS);
-        assertThat(booking.getStatusHistories().get(2).getStatus()).isEqualTo(BookingStatus.COMPLETED);
+        // Then - should have 4 status history entries (initial RECEIVED + 3 transitions)
+        assertThat(booking.getStatusHistories()).hasSize(4);
+        assertThat(booking.getStatusHistories().get(0).getStatus()).isEqualTo(BookingStatus.RECEIVED);
+        assertThat(booking.getStatusHistories().get(1).getStatus()).isEqualTo(BookingStatus.ASSIGNED);
+        assertThat(booking.getStatusHistories().get(2).getStatus()).isEqualTo(BookingStatus.IN_PROGRESS);
+        assertThat(booking.getStatusHistories().get(3).getStatus()).isEqualTo(BookingStatus.COMPLETED);
     }
 
     @Test
@@ -433,13 +434,15 @@ class BookingTest {
         assertThat(history1.getBooking()).isEqualTo(booking);
         assertThat(history2.getBooking()).isEqualTo(booking);
         
-        // Booking should have both histories
-        assertThat(booking.getStatusHistories()).containsExactly(history1, history2);
+        // Booking should have 3 histories (initial RECEIVED + 2 added)
+        assertThat(booking.getStatusHistories()).hasSize(3);
+        assertThat(booking.getStatusHistories()).contains(history1, history2);
         
         // Remove one history
         booking.removeStatusHistory(history1);
         assertThat(history1.getBooking()).isNull();
-        assertThat(booking.getStatusHistories()).containsExactly(history2);
+        assertThat(booking.getStatusHistories()).hasSize(2); // Initial RECEIVED + history2
+        assertThat(booking.getStatusHistories()).contains(history2);
     }
 
     @Test

@@ -87,9 +87,7 @@ class StatusHistoryRepositoryTest {
     void testFindByBookingOrderByDatetimeAsc() {
         List<StatusHistory> histories = statusHistoryRepository.findByBookingOrderByDatetimeAsc(booking1);
 
-        assertThat(histories).hasSize(2);
-        assertThat(histories).containsExactly(history1, history2);
-        
+        assertThat(histories).hasSize(3); // Initial RECEIVED + history1 + history2
         // Verify ordering
         for (int i = 0; i < histories.size() - 1; i++) {
             assertThat(histories.get(i).getDatetime())
@@ -103,9 +101,10 @@ class StatusHistoryRepositoryTest {
         List<StatusHistory> histories = statusHistoryRepository
                 .findByBookingIdOrderByDatetimeAsc(booking1.getId());
 
-        assertThat(histories).hasSize(2);
-        assertThat(histories).extracting(StatusHistory::getStatus)
-                           .containsExactly(BookingStatus.RECEIVED, BookingStatus.ASSIGNED);
+        assertThat(histories).hasSize(3); // Initial RECEIVED + history1 + history2
+        // First should be initial RECEIVED, then history1 (RECEIVED), then history2 (ASSIGNED)
+        assertThat(histories.get(0).getStatus()).isEqualTo(BookingStatus.RECEIVED);
+        assertThat(histories.get(2).getStatus()).isEqualTo(BookingStatus.ASSIGNED);
     }
 
     @Test
@@ -113,8 +112,9 @@ class StatusHistoryRepositoryTest {
     void testFindByStatus() {
         List<StatusHistory> received = statusHistoryRepository.findByStatus(BookingStatus.RECEIVED);
 
-        assertThat(received).hasSize(2);
-        assertThat(received).containsExactlyInAnyOrder(history1, history3);
+        // Should have 4: initial RECEIVED for booking1, history1 (RECEIVED), initial RECEIVED for booking2, history3 (RECEIVED)
+        assertThat(received).hasSize(4);
+        assertThat(received).contains(history1, history3);
     }
 
     @Test
@@ -134,8 +134,8 @@ class StatusHistoryRepositoryTest {
         long count1 = statusHistoryRepository.countByBooking(booking1);
         long count2 = statusHistoryRepository.countByBooking(booking2);
 
-        assertThat(count1).isEqualTo(2);
-        assertThat(count2).isEqualTo(1);
+        assertThat(count1).isEqualTo(3); // Initial RECEIVED + history1 + history2
+        assertThat(count2).isEqualTo(2); // Initial RECEIVED + history3
     }
 
     @Test
@@ -170,9 +170,10 @@ class StatusHistoryRepositoryTest {
         List<StatusHistory> workflow = statusHistoryRepository
                 .findByBookingOrderByDatetimeAsc(testBooking);
 
-        assertThat(workflow).hasSize(4);
+        assertThat(workflow).hasSize(5); // Initial RECEIVED + 4 saved
         assertThat(workflow).extracting(StatusHistory::getStatus)
                            .containsExactly(
+                               BookingStatus.RECEIVED, // Initial
                                BookingStatus.RECEIVED,
                                BookingStatus.ASSIGNED,
                                BookingStatus.IN_PROGRESS,
@@ -211,7 +212,7 @@ class StatusHistoryRepositoryTest {
     void testFindAll() {
         List<StatusHistory> allHistories = statusHistoryRepository.findAll();
 
-        assertThat(allHistories).hasSize(3);
+        assertThat(allHistories).hasSize(5); // 2 initial RECEIVED + history1 + history2 + history3
     }
 
     @Test

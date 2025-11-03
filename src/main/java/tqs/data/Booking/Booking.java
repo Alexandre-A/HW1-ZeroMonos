@@ -69,6 +69,7 @@ public class Booking {
     public Booking() {
         this.accessToken = UUID.randomUUID().toString();
         this.currentStatus = BookingStatus.RECEIVED;
+        addStatusHistory(new StatusHistory(this.currentStatus, this));
     }
 
     public Booking(String municipality, LocalDate collectionDate, String timeSlot) {
