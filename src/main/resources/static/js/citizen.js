@@ -45,10 +45,10 @@ async function loadMunicipalities() {
     }
 }
 
-// Set minimum date (2 days from today)
+// Set minimum date (1 day from today)
 function setMinDate() {
     const today = new Date();
-    today.setDate(today.getDate() + 2);
+    today.setDate(today.getDate() + 1);
     const minDate = today.toISOString().split('T')[0];
     document.getElementById('collectionDate').min = minDate;
 }

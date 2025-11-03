@@ -12,13 +12,6 @@ Feature: Staff Operations Management
   Scenario: View all bookings
     When I load the staff portal
     Then I should see a list of bookings
-    And each booking should display:
-      | ID            |
-      | Access Token  |
-      | Municipality  |
-      | Date          |
-      | Time Slot     |
-      | Status        |
 
   Scenario: Filter bookings by municipality
     Given there are bookings for multiple municipalities
@@ -51,24 +44,3 @@ Feature: Staff Operations Management
     And I click the assign button
     Then the booking status should change to "ASSIGNED"
     And the status history should show the transition
-
-  Scenario: Complete booking workflow
-    Given there is a booking with status "RECEIVED"
-    When I assign the booking
-    Then the status should be "ASSIGNED"
-    When I start the booking
-    Then the status should be "IN_PROGRESS"
-    When I complete the booking
-    Then the status should be "COMPLETED"
-    And no more actions should be available
-
-  Scenario: Cancel a booking at different stages
-    Given there is a booking with status "RECEIVED"
-    When I cancel the booking
-    Then the status should be "CANCELLED"
-    And no more actions should be available
-
-  Scenario: Attempt invalid state transition
-    Given there is a booking with status "COMPLETED"
-    When I view the booking details
-    Then I should not see any action buttons

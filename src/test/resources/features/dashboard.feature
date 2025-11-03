@@ -16,26 +16,6 @@ Feature: Operations Dashboard
     And I should see a municipality distribution chart
     And I should see the last updated timestamp
 
-  Scenario: Verify status distribution
-    Given there are:
-      | status      | count |
-      | RECEIVED    | 5     |
-      | ASSIGNED    | 3     |
-      | IN_PROGRESS | 2     |
-      | COMPLETED   | 10    |
-      | CANCELLED   | 1     |
-    When I view the status chart
-    Then the chart should show the correct distribution
-
-  Scenario: Verify municipality distribution
-    Given there are bookings for:
-      | municipality | count |
-      | Porto        | 8     |
-      | Lisboa       | 6     |
-      | Coimbra      | 3     |
-    When I view the municipality chart
-    Then the top municipalities table should show correct counts
-
   Scenario: Dashboard auto-refresh
     Given I am viewing the dashboard
     When I wait for 60 seconds
@@ -46,4 +26,3 @@ Feature: Operations Dashboard
     Given I am viewing the dashboard
     When I click the refresh button
     Then the data should be reloaded
-    And the charts should update

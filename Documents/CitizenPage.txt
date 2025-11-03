@@ -1,8 +1,0 @@
-- Form to create booking
-- Municipality dropdown (populated from external API)
-- Date/time slot selection
-- Bulk items input
-- Display access token after creation
-- Check booking status by token
-- Cancel booking option
-
