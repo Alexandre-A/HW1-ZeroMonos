@@ -159,6 +159,13 @@
             <artifactId>httpcore5</artifactId>
             <version>5.3.6</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.microsoft.playwright/playwright -->
+        <dependency>
+            <groupId>com.microsoft.playwright</groupId>
+            <artifactId>playwright</artifactId>
+            <version>1.56.0</version>
+        </dependency>
     </dependencies>
 
     <build>

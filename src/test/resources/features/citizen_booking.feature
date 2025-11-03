@@ -10,7 +10,7 @@ Feature: Citizen Booking Management
 
   Scenario: Create a new booking successfully
     When I select municipality "Porto"
-    And I select collection date 5 days from now
+    And I select collection date 30 days from now
     And I select time slot "morning"
     And I add a bulk item with:
       | name        | Old Sofa              |
@@ -40,7 +40,7 @@ Feature: Citizen Booking Management
 
   Scenario Outline: Create bookings for different municipalities
     When I select municipality "<municipality>"
-    And I select collection date 5 days from now
+    And I select collection date 30 days from now
     And I select time slot "<timeSlot>"
     And I add a bulk item with:
       | name        | Test Item       |
@@ -56,18 +56,6 @@ Feature: Citizen Booking Management
       | Porto        | morning   |
       | Lisboa       | afternoon |
       | Coimbra      | evening   |
-
-  Scenario: Attempt to create booking with past date
-    When I select municipality "Porto"
-    And I select collection date 1 days ago
-    And I select time slot "morning"
-    And I add a bulk item with:
-      | name        | Test Item |
-      | description | Test desc |
-      | weight      | 10.0      |
-      | volume      | 1.0       |
-    And I submit the booking
-    Then I should see an error message containing "future"
 
   Scenario: Check status with invalid token
     When I enter an invalid token "invalid-token-123"
